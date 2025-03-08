@@ -14,12 +14,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<HeroesDa>();
 
-var mediatrAssemblies = new[]
+var mediatRAssemblies = new[]
   {
           Assembly.GetAssembly(typeof(HeroDto)), // this assembly
       };
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(mediatrAssemblies!));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(mediatRAssemblies!));
     //.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
 
