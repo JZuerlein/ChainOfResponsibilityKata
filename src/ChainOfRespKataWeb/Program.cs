@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
+using ChainOfRespKataWeb.DataAccess;
 using Kata.ApiModels;
-using Kata.DataAccess;
-using Kata.Managers;
-using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,14 +13,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<HeroesDa>();
-builder.Services.AddScoped<HeroesManager>();
 
-var mediatRAssemblies = new[]
+var mediatrAssemblies = new[]
   {
           Assembly.GetAssembly(typeof(HeroDto)), // this assembly
       };
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(mediatRAssemblies!));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(mediatrAssemblies!));
     //.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
 

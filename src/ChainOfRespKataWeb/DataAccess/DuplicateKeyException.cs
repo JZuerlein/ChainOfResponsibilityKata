@@ -1,4 +1,4 @@
-﻿namespace Kata.DataAccess;
+﻿namespace ChainOfRespKataWeb.DataAccess;
 
 public class DuplicateKeyException : Exception
 {

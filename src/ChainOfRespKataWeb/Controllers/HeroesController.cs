@@ -1,16 +1,19 @@
-﻿using Kata.ApiModels;
-using Kata.DataAccess;
-using Kata.Managers;
+﻿using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
+using ChainOfRespKataWeb.UseCases.Heroes;
+using Kata.ApiModels;
+using ChainOfRespKataWeb.DataAccess;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kata.Controllers;
+namespace ChainOfRespKataWeb.Controllers;
 
 [Route("[controller]")]
 public class HeroesController(ILogger<HeroesController> logger,
-    HeroesManager heroesManager) : ControllerBase
+    IMediator mediator) : ControllerBase
 {
   private readonly ILogger<HeroesController> _logger = logger;
-  private readonly HeroesManager _heroesManager = heroesManager;
+  private readonly IMediator _mediator = mediator;
 
   [HttpGet("{id}")]
   public async Task<ActionResult<HeroDto>> GetById(int id)
@@ -20,9 +23,28 @@ public class HeroesController(ILogger<HeroesController> logger,
       _logger.LogError("Invalid id");
       return BadRequest();
     }
-    var hero = await _heroesManager.GetById(id);
 
-    return Ok(new HeroDto { Id = hero.Id, Name = hero.Name });
+    // First Attempt
+    // I've added MediatR, commands and handlers.
+    // But mapping the Ardalis.Result to an ActionResult looks ugly.
+    // var response = await _mediator.Send(new GetHeroCommand(id));
+    //
+    // if (response.IsSuccess)
+    //   return Ok(response.Value);
+    // else if (response.IsNotFound())
+    //   return NotFound();
+    // else
+    //   return Problem();
+    
+    // Second Attempt
+    // I added Ardalis.Result.AspNetCore so it could do the mapping for me.
+    // It works, but I'm going to tighten it up.
+    // var response = await _mediator.Send(new GetHeroCommand(id));
+    // return response.ToActionResult(this);
+    
+    // Third Attempt
+    // :^)
+    return this.ToActionResult(await _mediator.Send(new GetHeroCommand(id)));
   }
 
   [HttpPost()]
@@ -42,8 +64,7 @@ public class HeroesController(ILogger<HeroesController> logger,
 
     try
     {
-      var newHero = await _heroesManager.Add(hero);
-      return Ok(new HeroDto { Id = newHero.Id, Name = newHero.Name });
+      return this.ToActionResult(await _mediator.Send(new AddHeroCommand(hero.Name)));
     }
     catch (DuplicateKeyException)
     {

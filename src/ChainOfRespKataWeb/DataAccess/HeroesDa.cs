@@ -1,6 +1,6 @@
 ﻿using Kata.Entities;
 
-namespace Kata.DataAccess;
+namespace ChainOfRespKataWeb.DataAccess;
 
 public class HeroesDa
 {
